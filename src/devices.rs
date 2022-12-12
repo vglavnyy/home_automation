@@ -62,9 +62,12 @@ pub struct TempSensor {
 impl SmartSocket {
     pub(crate) fn new(network_id: String) -> Self {
         SmartSocket {
-            id: format!("smart_socket: {}", network_id),
+            id: format!("smart_socket: {network_id}"),
             state: SocketState::Unknown,
-            power: ElectricalPower { p_watts: f32::NAN, q_var: f32::NAN },
+            power: ElectricalPower {
+                p_watts: f32::NAN,
+                q_var: f32::NAN,
+            },
         }
     }
 
@@ -79,7 +82,7 @@ impl SmartSocket {
 
 impl DeviceInfoProvider for SmartSocket {
     fn descriptor(&self) -> &str {
-        &*self.id
+        &self.id
     }
 
     fn get_state(&self) -> String {
@@ -94,9 +97,11 @@ impl DeviceInfoProvider for SmartSocket {
 impl TempSensor {
     pub(crate) fn new(network_id: String) -> Self {
         TempSensor {
-            id: format!("temp_sensor: {}", network_id),
+            id: format!("temp_sensor: {network_id}"),
             state: TempSensorState::Unknown,
-            temperature: Temperature { temperature: f32::NAN },
+            temperature: Temperature {
+                temperature: f32::NAN,
+            },
         }
     }
 
@@ -107,7 +112,7 @@ impl TempSensor {
 
 impl DeviceInfoProvider for TempSensor {
     fn descriptor(&self) -> &str {
-        &*self.id
+        &self.id
     }
 
     fn get_state(&self) -> String {
@@ -129,7 +134,7 @@ impl SmartDevice {
         // Can it be simplified like C++ static_cast because every type is known?
         match &self {
             SmartDevice::SmartSocket(device) => device as &dyn DeviceInfoProvider,
-            SmartDevice::TempSensor(device) => device as &dyn DeviceInfoProvider
+            SmartDevice::TempSensor(device) => device as &dyn DeviceInfoProvider,
         }
     }
 }
@@ -149,7 +154,7 @@ pub struct SmartHouse {
 impl SmartHouse {
     pub fn new() -> Self {
         SmartHouse {
-            devices: DeviceTable::new()
+            devices: DeviceTable::new(),
         }
     }
 
@@ -161,12 +166,13 @@ impl SmartHouse {
         let mut result = Vec::new();
         for (key, value) in &self.devices {
             let device_info = value.as_device_info();
-            result.push(
-                format!("{{ location: {}@{}, {}, {} }}",
-                        key.name,
-                        key.location,
-                        device_info.get_state(),
-                        device_info.descriptor()))
+            result.push(format!(
+                "{{ location: {}@{}, {}, {} }}",
+                key.name,
+                key.location,
+                device_info.get_state(),
+                device_info.descriptor()
+            ))
         }
         result
     }
